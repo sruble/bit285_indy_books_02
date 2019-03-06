@@ -24,51 +24,49 @@ namespace IndyBooks.Controllers
         {
             //Full Collection Search
             IQueryable<Book> foundBooks = _db.Books; // start with entire collection
-            // // //// // //  below block is new 
+            // // //// // // seems good 
 
-            if((search.Title == null) && (search.MinPrice > 0 && search.MaxPrice > 0) && (search.AuthorLastName == null))
+            if (search.Title == null)
             {
-                _db.Books.Include(b => b.Author.Name) //I don't understand why this won't display the Authors Name
+                    foundBooks = foundBooks
+                    .Include(b => b.Author) //Inlcude the author in every block// or page wont display
+                  ;
 
-
-                    ;
-                //Have tried below
-                //.Include(b => b.Author)
-                //.Include(w => w.Author)
-                //.Include(b => b.Author.Name);
             }
 
             //Partial Title Search
+            //seems good
             if (search.Title != null)
             {
                 foundBooks = foundBooks
+                    .Include(b => b.Author)
                              .Where(b => b.Title.Contains(search.Title))
                              .OrderBy(b => b.Title)
                              ;
             }
 
             //Author's Last Name Search
+            ///seems good
             if (search.AuthorLastName != null)
             {
                 //TODO:Update to use the Name property of the Book's Author entity///added 
                 foundBooks = foundBooks
-                               //.Include(b => b.Author.Name)
-                                //.Include(b => b.Author.Name == StringComparison.CurrentCulture)
+                             .Include(b => b.Author)
                              .Where(b => b.Author.Name.EndsWith(search.AuthorLastName, StringComparison.CurrentCulture))
                            
 
                              ;
             }
             //Priced Between Search (min and max price entered)
-            // //  
+            // //  seems good 
             if (search.MinPrice > 0 && search.MaxPrice > 0)
             {
                 foundBooks = foundBooks
-                             //.Include(b => b.Author) //does for .Include matter?
+                            // .Include(b => b.Author) //does placement for .Include() matter?
                             .Where(b => b.Price >= search.MinPrice && b.Price <= search.MaxPrice) //filter out books to 100 to 150
                             .Include(b => b.Author)// include the author                       
-                           // .Select(b => new Book { Author = b.Author})/// Create a new book to Hold the Author Info, While Eliminating theduplicate Prices //
-                            //.Distinct() //Filter the top results even further by ensuring One of each Author name is Displayed 
+                            .Select(b => new Book { Author = b.Author})/// Create a new book to Hold the Author Info, While Eliminating theduplicate Prices //
+                            .Distinct() //Filter the top results even further by ensuring One of each Author name is Displayed 
                         
                              ;
             }
@@ -79,6 +77,7 @@ namespace IndyBooks.Controllers
                 decimal max = _db.Books.Max(b => b.Price);
 
                 foundBooks = foundBooks
+                    .Include(b => b.Author)
                     .Where(b => b.Price ==  max) ///added this line //pulls max priced book in DB
                              ;
 
