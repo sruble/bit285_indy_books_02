@@ -7,11 +7,14 @@ namespace IndyBooks.Models
     {
         public IndyBooksDataContext(DbContextOptions<IndyBooksDataContext> options) : base(options)
         {
-            Database.EnsureCreated();
+            Database.EnsureCreated(); // // this can been commented out with the addition of Migrations...reference days notes
         }
 
         //TODO: Define DbSets for Collections representing DB tables
-        public DbSet<Book> Books { get; set; }
+        // Check out SQL Server Object Explorer to see the tables created by below two lines of code
+        public DbSet<Book> Books { get; set; } // Books Table 
+        //
+        public DbSet<Writer> Writers { get; set; } // Creating the Writers Table 
 
         // Used to fine tune certain aspects of the Data model
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,7 +31,8 @@ namespace IndyBooks.Models
         // - https://docs.microsoft.com/en-us/sql/linux/quickstart-install-connect-docker?view=sql-server-2017
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=localhost,1433; Database=IndyBooks;User=SA; Password=Pa$$word!");
+           // optionsBuilder.UseSqlServer("Server=localhost,1433; Database=IndyBooks;User=SA; Password=Pa$$word!");
+           ///Above line should be commented out//or build will fail 
         }
     }
 }
